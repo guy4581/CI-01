@@ -64,7 +64,7 @@ def normalize_classification_data(data):
     norm_inputs = (inputs - input_mins) / (input_maxs - input_mins + 1e-8)
     return [(x, y) for x, (_, y) in zip(norm_inputs, data)]
 
-# ===================== MLP with NumPy =====================
+# ===================== MLP ===============================
 def sigmoid(x):
     return 1 / (1 + np.exp(-x))
 
@@ -225,13 +225,7 @@ if __name__ == '__main__':
             print(cm)
         print(f"Average Accuracy over {k} folds: {total_acc / k:.4f}")
 
-    
-    # แสดง predict กับ actual ของ test set
-            # print("Predictions vs Actual (class indices):")
-            # for x, y in test:
-            #     pred_idx = np.argmax(model.predict(x))
-            #     actual_idx = np.argmax(y)
-            #     print(f"Predicted: {pred_idx}, Actual: {actual_idx}")
+
 
 else:
         print("Invalid data type. Please enter 'flood' or 'cross'.")
