@@ -166,11 +166,11 @@ if __name__ == '__main__':
             hidden_layers = list(map(int, hidden_layers_input.split()))
         else:
             # กำหนด default ถ้าไม่กรอก
-            hidden_layers = [10, 10]
+            hidden_layers = [20, 20]
     else:
         k, learning_rate, momentum_rate = 10, 0.01, 0.9
         max_epoch, av_error, data_type = 1000, 0.001, 'flood'
-        hidden_layers = [10,10]
+        hidden_layers = [20,20]
 
     # ใช้ hidden_layers ในการสร้าง model
     print(f"Data type used: '{data_type}'")
@@ -189,7 +189,21 @@ if __name__ == '__main__':
             total_mse += mse
             mse_list.append(mse)
             print(f"[Fold {fold}] Final MSE on Test Set: {mse:.6f}, Epochs: {len(mse_per_epoch)}")
+        y_true_denorm = []
+        y_pred_denorm = []
+        for x, y in test:
+            pred_norm = model.predict(x)[0]
+            pred_denorm = pred_norm * (tmax - tmin) + tmin
+            true_denorm = y[0] * (tmax - tmin) + tmin
+            y_true_denorm.append(true_denorm)
+            y_pred_denorm.append(pred_denorm)
+
         print(f"Average MSE over {k} folds: {total_mse / k:.6f}")
+        # แสดงค่าจริง เทียบกับค่าทำนาย (10 ตัวแรก)
+        print(f"Sample predictions (denormalized) for Fold {fold}:")
+        for i in range(min(10, len(y_true_denorm))):
+            print(f"  Actual: {y_true_denorm[i]:.2f}, Predicted: {y_pred_denorm[i]:.2f}")
+
         # ===== Plot MSE Graph =====
         plt.figure(figsize=(10, 6))
         for fold_index, mse_list_per_epoch in enumerate(epoch_lists_per_fold, start=1):
@@ -201,13 +215,8 @@ if __name__ == '__main__':
         plt.legend()
         plt.tight_layout()
         plt.show()
-    
-    # แสดง predict กับ actual ของ test set
-            # print("Predictions vs Actual:")
-            # for x, y in test:
-            #     pred = model.predict(x)[0] * (tmax - tmin) + tmin
-            #     actual = y[0] * (tmax - tmin) + tmin
-            #     print(f"Predicted: {pred:.4f}, Actual: {actual:.4f}")
+
+       
 
 
     elif data_type == 'cross':
